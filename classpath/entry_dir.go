@@ -4,6 +4,7 @@ import (
 	"github.com/zxh0/jvm.go/vmutils"
 )
 
+// DirEntry 代表目录的 Entry
 type DirEntry struct {
 	dir *vmutils.Dir
 }

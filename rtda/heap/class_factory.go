@@ -6,6 +6,7 @@ import (
 	"github.com/zxh0/jvm.go/classfile"
 )
 
+// newClass 将 ClassFile 转换为 Class
 func newClass(cf *classfile.ClassFile) *Class {
 	class := &Class{
 		AccessFlags:     classfile.AccessFlags(cf.AccessFlags),

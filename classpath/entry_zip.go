@@ -4,6 +4,7 @@ import (
 	"github.com/zxh0/jvm.go/vmutils"
 )
 
+// ZipEntry 代表 ZipFile 的 Entry
 type ZipEntry struct {
 	zipFile *vmutils.ZipFile
 }

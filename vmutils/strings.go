@@ -6,18 +6,23 @@ import (
 	"unicode/utf16"
 )
 
+// DotToSlash 将 . 替换为 /
 func DotToSlash(name string) string {
 	return strings.ReplaceAll(name, ".", "/")
 }
+
+// SlashToDot 将 / 替换为 .
 func SlashToDot(name string) string {
 	return strings.ReplaceAll(name, "/", ".")
 }
 
+// UTF8ToUTF16 将 UTF8 转换为 UTF16
 func UTF8ToUTF16(s string) []uint16 {
 	runes := []rune(s)
 	return utf16.Encode(runes) // func Encode(s []rune) []uint16
 }
 
+// UTF16ToUTF8 将 UTF16 转换为 UTF8
 func UTF16ToUTF8(s []uint16) string {
 	runes := utf16.Decode(s) // func Decode(s []uint16) []rune
 	return string(runes)

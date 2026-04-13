@@ -39,7 +39,9 @@ func readConstantInterfaceMethodRefInfo(reader *ClassReader) ConstantInterfaceMe
 
 func readConstantMemberRefInfo(reader *ClassReader) constantMemberRefInfo {
 	return constantMemberRefInfo{
-		ClassIndex:       reader.ReadUint16(),
+		// 读取 uint16 2字节的内容，作为 class 索引
+		ClassIndex: reader.ReadUint16(),
+		// 读取 uint16 2字节的内容，作为 name_and_type 索引
 		NameAndTypeIndex: reader.ReadUint16(),
 	}
 }

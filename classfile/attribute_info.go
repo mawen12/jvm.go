@@ -1,11 +1,11 @@
 package classfile
 
 /*
-attribute_info {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u1 info[attribute_length];
-}
+	attribute_info {
+	    u2 attribute_name_index;
+	    u4 attribute_length;
+	    u1 info[attribute_length];
+	}
 */
 type AttributeInfo interface{}
 
@@ -20,8 +20,11 @@ func readAttributes(reader *ClassReader) []AttributeInfo {
 }
 
 func readAttributeInfo(reader *ClassReader) AttributeInfo {
+	// 读取 uint16 2字节的内容，作为 attr name 的索引
 	attrNameIndex := reader.ReadUint16()
+	// 读取 uint32 4字节的内容，作为 attr 的长度
 	attrLen := reader.ReadUint32()
+	// 从常量池中读取指定索引的字符串值
 	attrName := reader.cf.GetRawUTF8(attrNameIndex)
 
 	switch attrName {

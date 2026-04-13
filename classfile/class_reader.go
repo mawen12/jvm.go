@@ -7,20 +7,26 @@ import (
 	"github.com/zxh0/jvm.go/vmutils"
 )
 
+// ClassReader 基于 BytesReader 封装，且将读取的结果写入到 ClassFile。
 type ClassReader struct {
 	vmutils.BytesReader
 	cf *ClassFile
 }
 
+// newClassReader 使用给定的数组构造，读取的方式顺序为：big-endian
 func newClassReader(data []byte) ClassReader {
 	br := vmutils.NewBytesReader(data, binary.BigEndian)
 	return ClassReader{BytesReader: br}
 }
 
+// readUint16s 基于长度前缀法读取多个 uint16（2字节）
 func (reader *ClassReader) readUint16s() []uint16 {
+	// 读取首个 uint16，确定后续的 uint16 数量
 	n := reader.ReadUint16()
+	// 构造指定数量的数组
 	s := make([]uint16, n)
 	for i := range s {
+		// 读取 uint16
 		s[i] = reader.ReadUint16()
 	}
 	return s

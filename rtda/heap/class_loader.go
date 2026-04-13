@@ -27,20 +27,26 @@ class names:
 */
 
 // the bootstrap class loader
+// ClassLoader 负责加载类
 type ClassLoader struct {
-	rt        *Runtime
+	rt *Runtime
+	// 类路径
 	classPath *classpath.ClassPath
-	classMap  map[string]*Class // loaded classes
-	verbose   bool
+	// 已加载的类文件，在实际的 JVM 中，ClassLoader 会持有一个指向 Metaspace 的引用，Metaspace 中保存已经 loaded 的类
+	classMap map[string]*Class // loaded classes
+	// 当实际加载完成后，输出日志
+	verbose bool
 	// some frequently used classes
-	jlObjectClass       *Class
-	jlClassClass        *Class
-	jlStringClass       *Class
-	jlThreadClass       *Class
-	jlCloneableClass    *Class
-	ioSerializableClass *Class
+	// 记录最频繁使用的类
+	jlObjectClass       *Class // java/lang/Object
+	jlClassClass        *Class // java/lang/Class
+	jlStringClass       *Class // java/lang/String
+	jlThreadClass       *Class // java/lang/Thread
+	jlCloneableClass    *Class // java/lang/Cloneable
+	ioSerializableClass *Class // java/io/Serializable
 }
 
+// newBootLoader 初始化 bootstrap 类加载器
 func newBootLoader(cp *classpath.ClassPath, verbose bool) *ClassLoader {
 	return &ClassLoader{
 		classPath: cp,
@@ -143,22 +149,29 @@ func (loader *ClassLoader) getClass(name string) *Class {
 }
 
 func (loader *ClassLoader) LoadClass(name string) *Class {
+	// 检查是否已经加载过，加载过就直接返回
 	if class, ok := loader.classMap[name]; ok {
 		// already loaded
 		return class
-	} else if name[0] == '[' {
+	} else if name[0] == '[' { // 如果首字节为 [，代表是数组
 		// array class
 		return loader.getRefArrayClassByName(name)
 	} else {
+		// 执行原始的类加载流程
 		return loader.reallyLoadClass(name)
 	}
 }
 
+// reallyLoadClass 执行原始的类加载流程
 func (loader *ClassLoader) reallyLoadClass(name string) *Class {
+	// 读取类的文件信息
 	cpEntry, data := loader.readClassData(name)
+	// 将文件加载到内存中，并解析为 Class
 	class := loader.loadClass(name, data)
+	// 添加 Class 的来源
 	class.LoadedFrom = cpEntry
 
+	// 输出
 	if loader.verbose {
 		fmt.Printf("[Loaded %s from %s]\n", name, cpEntry)
 	}
@@ -166,8 +179,11 @@ func (loader *ClassLoader) reallyLoadClass(name string) *Class {
 	return class
 }
 
+// readClassData 定位文件，并读取为 []byte
 func (loader *ClassLoader) readClassData(name string) (classpath.Entry, []byte) {
+	// 读取类的文件 entry 和字节数组
 	cpEntry, classData := loader.classPath.ReadClass(name)
+	// 如果读取不到，则抛出 ClassNotFoundError
 	if classData == nil {
 		panic(vm.NewClassNotFoundError(vmutils.SlashToDot(name)))
 	}
@@ -175,18 +191,23 @@ func (loader *ClassLoader) readClassData(name string) (classpath.Entry, []byte) 
 	return cpEntry, classData
 }
 
+// parseClassData 解析并将结果转换为 Class
 func (loader *ClassLoader) parseClassData(name string, data []byte) *Class {
+	// 将字节数组解析为 classFile
 	cf, err := classfile.Parse(data)
 	if err != nil {
 		// todo
 		panic("failed to parse class file: " + name + "! " + err.Error())
 	}
 
+	// 将 classFile -> Class
 	return newClass(cf)
 }
 
 func (loader *ClassLoader) loadClass(name string, data []byte) *Class {
+	// 解析并将结果转换为 Class
 	class := loader.parseClassData(name, data)
+	//
 	hackClass(class)
 	loader.resolveSuperClass(class)
 	loader.resolveInterfaces(class)
@@ -215,16 +236,21 @@ func hackClass(class *Class) {
 }
 
 // todo
+// resolveSuperClass 解决父类
 func (loader *ClassLoader) resolveSuperClass(class *Class) {
 	if class.superClassName != "" {
+		// 加载父类
 		class.SuperClass = loader.LoadClass(class.superClassName)
 	}
 }
+
+// resolveInterfaces 解决接口
 func (loader *ClassLoader) resolveInterfaces(class *Class) {
 	interfaceCount := len(class.interfaceNames)
 	if interfaceCount > 0 {
 		class.Interfaces = make([]*Class, interfaceCount)
 		for i, interfaceName := range class.interfaceNames {
+			// 加载接口
 			class.Interfaces[i] = loader.LoadClass(interfaceName)
 		}
 	}

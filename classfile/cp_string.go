@@ -1,10 +1,10 @@
 package classfile
 
 /*
-CONSTANT_String_info {
-    u1 tag;
-    u2 string_index;
-}
+	CONSTANT_String_info {
+	    u1 tag;
+	    u2 string_index;
+	}
 */
 type ConstantStringInfo struct {
 	StringIndex uint16
@@ -12,6 +12,7 @@ type ConstantStringInfo struct {
 
 func readConstantStringInfo(reader *ClassReader) ConstantStringInfo {
 	return ConstantStringInfo{
+		// 读取 uint16 2字节的内容
 		StringIndex: reader.ReadUint16(),
 	}
 }

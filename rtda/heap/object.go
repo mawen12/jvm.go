@@ -6,13 +6,16 @@ import (
 	"sync"
 )
 
-// object
+// object 对象
 type Object struct {
-	Class   *Class
+	// 对象所属的类
+	Class *Class
+	// 字段，保存了字段值
 	Fields  interface{} // []Slot for Object, []int32 for int[] ...
 	Extra   interface{} // remember some important things from Golang
 	Monitor *Monitor
-	lock    *sync.RWMutex // state lock
+	// 读写锁
+	lock *sync.RWMutex // state lock
 }
 
 func newObj(class *Class, fields, extra interface{}) *Object {

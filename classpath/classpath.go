@@ -36,9 +36,13 @@ func (cp *ClassPath) parseUserClassPath(cpOption string) {
 }
 
 // className: fully/qualified/ClassName
+// ReadClass 通过全限定类名读取类信息，比如 com.github.mawen12.HelloWorld
 func (cp *ClassPath) ReadClass(className string) (Entry, []byte) {
+	// 添加 .class 后缀
 	className = className + ".class"
+	// 迭代该类路径下的 entry
 	for _, entry := range cp.entries {
+		//
 		if data, err := entry.readClass(className); err == nil {
 			return entry, data
 		}

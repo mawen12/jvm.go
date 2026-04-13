@@ -5,6 +5,24 @@ import (
 )
 
 // Constant pool tags
+// 常量池标志映射表：
+// utf8 -> 1 (JDK 1.0.2)
+// integer -> 3 (JDK 1.0.2)
+// float -> 4 (JDK 1.0.2)
+// long -> 5 (JDK 1.0.2)
+// double -> 6 (JDK 1.0.2)
+// class -> 7 (JDK 1.0.2)
+// string -> 8 (JDK 1.0.2)
+// field ref -> 9 (JDK 1.0.2)
+// method ref -> 10 (JDK 1.0.2)
+// interface method ref -> 11 (JDK 1.0.2)
+// name and type -> 12 (JDK 1.0.2)
+// method handle -> 13 (JDK 1.7) 方法反射的替代方案
+// method type -> 18 (JDK 1.7) 方法反射的辅助
+// invoke dynamic -> 19 (JDK 1.7) 方法反射的辅助
+// module -> 19 (JDK 9)
+// package -> 20 (JDK 9)
+// dynamic -> 17 (JDK 11)
 const (
 	ConstantUtf8               = 1  // Java 1.0.2
 	ConstantInteger            = 3  // Java 1.0.2
@@ -26,14 +44,16 @@ const (
 )
 
 /*
-cp_info {
-    u1 tag;
-    u1 info[];
-}
+	cp_info {
+	    u1 tag;
+	    u1 info[];
+	}
 */
 type ConstantInfo interface{}
 
+// readConstantInfo 读取常量池的信息
 func readConstantInfo(reader *ClassReader) ConstantInfo {
+	// 读取 1字节，u1 的标志位
 	tag := reader.ReadUint8()
 	switch tag {
 	case ConstantInteger:

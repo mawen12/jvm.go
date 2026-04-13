@@ -10,6 +10,7 @@ import (
 	"github.com/zxh0/jvm.go/classfile"
 )
 
+// main 输出 native 的方法信息
 func main() {
 	if len(os.Args) > 1 {
 		jarFileName := os.Args[1]
@@ -90,9 +91,12 @@ func handleClassfile(cf *classfile.ClassFile) {
 	}
 }
 
+// isNative 是否为原生的
 func isNative(m classfile.MemberInfo) bool {
 	return m.AccessFlags&0x0100 != 0
 }
+
+// isStatic 是否为静态的方法
 func isStatic(m classfile.MemberInfo) bool {
 	return m.AccessFlags&0x0008 != 0
 }

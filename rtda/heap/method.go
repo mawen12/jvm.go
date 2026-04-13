@@ -7,7 +7,9 @@ import (
 )
 
 const (
-	mainMethodName   = "main"
+	// main 方法名
+	mainMethodName = "main"
+	// main 方法描述，参数是 []string，且无返回值
 	mainMethodDesc   = "([Ljava/lang/String;)V"
 	clinitMethodName = "<clinit>"
 	clinitMethodDesc = "()V"

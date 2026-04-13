@@ -38,6 +38,7 @@ var (
 	}
 )
 
+// main 输出反编译的类信息
 func main() {
 	opts, args := parseOptions()
 	if helpFlag || len(args) == 0 {
@@ -64,11 +65,13 @@ func printUsage() {
 
 func printClassInfo(opts *vm.Options, className string) {
 	cp := classpath.Parse(opts)
+	// 读取类的 class 信息
 	_, classData := cp.ReadClass(className)
 	if classData == nil {
 		panic("class not found: " + className)
 	}
 
+	// 解析类信息
 	cf, err := classfile.Parse(classData)
 	if err != nil {
 		panic(err)

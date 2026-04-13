@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 )
 
+// 代表一个目录
 type Dir struct {
 	absPath string
 }
@@ -22,7 +23,9 @@ func (dir *Dir) AbsPath() string {
 }
 
 func (dir *Dir) ReadFile(filename string) ([]byte, error) {
+	// 拼接完整的文件路径
 	absFilename := filepath.Join(dir.absPath, filename)
+	// 读取文件内容
 	if data, err := ioutil.ReadFile(absFilename); err != nil {
 		return nil, err
 	} else {
