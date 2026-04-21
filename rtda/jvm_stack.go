@@ -6,6 +6,7 @@ import (
 
 // jvm stack
 type Stack struct {
+	// 栈的最大深度，被
 	maxSize uint
 	size    uint
 	_top    *Frame // stack is implemented as linked list
@@ -19,17 +20,22 @@ func (stack *Stack) isEmpty() bool {
 	return stack._top == nil
 }
 
+// push 将 frame 压入 stack 中
 func (stack *Stack) push(frame *Frame) {
+	// 检查是否超过了 stack 的最大深度，超过了则抛出 StackOverflowError 错误
 	if stack.size >= stack.maxSize {
 		// todo
 		panic("StackOverflowError")
 	}
 
+	// 如果栈顶已有其他 frame，则将 frame 的下一个指向原先的栈顶
 	if stack._top != nil {
 		frame.lower = stack._top
 	}
 
+	// 更新栈顶为刚插入的 frame
 	stack._top = frame
+	// 栈大小+1
 	stack.size++
 }
 

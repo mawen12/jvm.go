@@ -12,13 +12,18 @@ type Runtime struct {
 	stringPool map[string]*Object // interned strings
 }
 
+// NewRuntime 初始化 Boot 类加载器，初始化 Runtime，加载 Object, Class, Cloneable, Thread, String, 基本数据类型及其数组
 func NewRuntime(cp *classpath.ClassPath, verboseClass bool) *Runtime {
+	// 初始化 bootstrap 类加载器
 	bl := newBootLoader(cp, verboseClass)
+	// 创建 jvm runtime
 	rt := &Runtime{
 		bootLoader: bl,
 		stringPool: map[string]*Object{},
 	}
+	//
 	bl.rt = rt
+	// 加载 Object, Class, Cloneable, Thread, String, 基本数据类型及其数组
 	bl.init()
 	return rt
 }

@@ -26,6 +26,37 @@ type MethodData struct {
 	AnnotationDefaultData   []byte // AnnotationDefault_attribute
 }
 
+/*
+代表 Java 对象中的方法
+
+	instance initialization method
+	class method
+	interface initialization method
+
+format:
+
+	method_info {
+		u2	access_flags;
+		u2	name_index; // 方法名称在类的常量池中的索引
+		u2	descriptor_index; // 方法描述在类的常量池中的索引
+		u2	attributes_count;
+		attribute_info
+	}
+
+该 type 从 MemberInfo 解析而来。
+
+详见：https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.6
+
+ParamCount
+
+	参数数量
+
+ParamSlotCount
+
+	用于保存参数值的 slot 数量
+
+	
+*/
 type Method struct {
 	ClassMember
 	MethodData
@@ -69,24 +100,37 @@ func (method *Method) parseDescriptor() {
 	}
 }
 
+// IsVoidReturnType 检查方法是否无返回值
 func (method *Method) IsVoidReturnType() bool {
+	// 方法描述符以 )V 结尾
 	return strings.HasSuffix(method.Descriptor, ")V")
 }
 
+// IsConstructor 检查是否为实例构造器方法
 func (method *Method) IsConstructor() bool {
+	// 非静态方法，且方法名为 <init>
 	return !method.IsStatic() && method.Name == constructorName
 }
+
+// IsClinit 检查是否类构造构造器方法
 func (method *Method) IsClinit() bool {
+	// 静态，且方法名为 <clinit> 且方法描述符为 ()V
 	return method.IsStatic() &&
 		method.Name == clinitMethodName &&
 		method.Descriptor == clinitMethodDesc
 }
+
+// IsRegisterNatives 是否为 registerNatives 方法
 func (method *Method) IsRegisterNatives() bool {
+	// 静态，且方法名为 registerNatives 且方法描述符为 ()V
 	return method.IsStatic() &&
 		method.Name == "registerNatives" &&
 		method.Descriptor == "()V"
 }
+
+// IsInitIDs 是否为 initIDs 方法
 func (method *Method) IsInitIDs() bool {
+	// 静态，且方法名为 initIDs 且方法描述符为 ()V
 	return method.IsStatic() &&
 		method.Name == "initIDs" &&
 		method.Descriptor == "()V"

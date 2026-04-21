@@ -10,7 +10,9 @@ type CodeReader struct {
 	vmutils.BytesReader
 }
 
+// NewCodeReader 创建 code 读取器
 func NewCodeReader(code []byte) *CodeReader {
+	// 创建字节读取器
 	br := vmutils.NewBytesReader(code, binary.BigEndian)
 	return &CodeReader{BytesReader: br}
 }

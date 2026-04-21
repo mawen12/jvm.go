@@ -9,6 +9,7 @@ func NewShimFrame(thread *Thread, args []heap.Slot) *Frame {
 	return newShimFrame(thread, args)
 }
 
+// newShimFrame 创建一个 shim 帧
 func newShimFrame(thread *Thread, args []heap.Slot) *Frame {
 	return &Frame{
 		Thread:       thread,

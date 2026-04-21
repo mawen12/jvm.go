@@ -6,6 +6,7 @@ import (
 
 // TODO: use WaitGroup?
 var (
+	// 统计非 daemon 线程数量的计数器
 	aliveCount = 0
 	lock       = &sync.Mutex{}
 	cond       = sync.NewCond(lock)

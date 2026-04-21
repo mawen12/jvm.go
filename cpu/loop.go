@@ -45,12 +45,17 @@ func ExecMethod(thread *rtda.Thread, method *heap.Method, args []heap.Slot) heap
 }
 
 func Loop(thread *rtda.Thread) {
+	// 读取线程对象
 	threadObj := thread.JThread()
+	// 通过反射读取 Thread#daemon 字段
 	isDaemon := threadObj != nil && threadObj.GetFieldValue("daemon", "Z").IntValue() == 1
+	// 检查是否为 daemon
 	if !isDaemon {
+		// 线程计数+1
 		nonDaemonThreadStart()
 	}
 
+	// 循环
 	_loop(thread)
 
 	// terminate thread
@@ -66,11 +71,15 @@ func _loop(thread *rtda.Thread) {
 	defer _catchErr(thread) // todo
 
 	for {
+		// 读取线程栈顶的帧
 		frame := thread.CurrentFrame()
+		// 读取帧上的程序计数器
 		pc := frame.NextPC
+		// 更新到线程上
 		thread.PC = pc
 
 		// fetch instruction
+		// 
 		instr, nextPC := fetchInstruction(frame.Method, pc)
 		frame.NextPC = nextPC
 
@@ -85,8 +94,11 @@ func _loop(thread *rtda.Thread) {
 	}
 }
 
+// fetchInstruction 
 func fetchInstruction(method *heap.Method, pc int) (base.Instruction, int) {
+	// 检查方法指令是否存在
 	if method.Instructions == nil {
+		// 
 		method.Instructions = instructions.Decode(method.Code)
 	}
 

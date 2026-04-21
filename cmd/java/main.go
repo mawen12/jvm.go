@@ -24,14 +24,19 @@ Usage: {java} [options] class [args...]
 `
 
 var (
-	versionFlag              bool
+	// 输出版本并退出
+	versionFlag bool
+	// 输出帮助信息并退出
 	helpFlag                 bool
 	listModulesFlag          bool
 	showModuleResolutionFlag bool
 )
 
+// 对应 java 命令
 func main() {
+	// 解析参数
 	opts, args := parseOptions()
+
 	if helpFlag || opts.MainClass == "" {
 		printUsage()
 	} else if versionFlag {
@@ -41,10 +46,12 @@ func main() {
 	} else if opts.MainModule != "" {
 		startJVM13(opts, args)
 	} else {
+		// 启动 JVM8
 		startJVM8(opts, args)
 	}
 }
 
+// parseOptions 将参数解析到 Options，并完成初始化操作，将剩下的参数解析到 MainClas 和 args
 func parseOptions() (*vm.Options, []string) {
 	options := &vm.Options{}
 	flag.BoolVar(&versionFlag, "version", false, "Displays version information and exit.")
@@ -69,6 +76,7 @@ func parseOptions() (*vm.Options, []string) {
 	flag.StringVar(&options.XCPUProfile, "Xprofile:cpu", "", "")
 	flag.Parse()
 
+	// 读取去除 flag 的参数
 	args := flag.Args()
 	options.Init()
 
@@ -78,7 +86,9 @@ func parseOptions() (*vm.Options, []string) {
 			options.MainClass = mm[idx+1:]
 		}
 	} else if len(args) > 0 {
+		// 使用第一个参数作为 MainClass，比如 HelloWorld
 		options.MainClass = args[0]
+		// 其余的作为 main 方法的启动参数
 		args = args[1:]
 	}
 
@@ -123,18 +133,27 @@ func startJVM8(opts *vm.Options, args []string) {
 		defer pprof.StopCPUProfile()
 	}
 
+	// 创建 main 线程
 	mainThread := createMainThread(opts, args)
+	// 
 	cpu.Loop(mainThread)
 	cpu.KeepAlive()
 }
 
+// createMainThread 创建 main 线程，
 func createMainThread(opts *vm.Options, args []string) *rtda.Thread {
+	// 解析 jdk 和 classpath 路径
 	cp := classpath.Parse(opts)
+	// 初始化 Boot 类加载器，初始化 Runtime，加载 Object, Class, Cloneable, Thread, String, 基本数据类型及其数组
 	rt := heap.NewRuntime(cp, opts.VerboseClass)
 
+	// 将main从 . -> /，方便查找路径
 	mainClass := vmutils.DotToSlash(opts.MainClass)
+	// 构造 slot
 	bootArgs := []heap.Slot{heap.NewHackSlot(mainClass), heap.NewHackSlot(args)}
+	// 创建 main 线程
 	mainThread := rtda.NewThread(nil, opts, rt)
+	// 调用 shim 的方法
 	mainThread.InvokeMethodWithShim(rtda.ShimBootstrapMethod, bootArgs)
 	return mainThread
 }

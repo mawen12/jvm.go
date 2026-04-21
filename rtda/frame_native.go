@@ -15,11 +15,14 @@ var (
 	_invokeNativeReturn  = []byte{0xfe, 0xb1}
 )
 
+// newNativeFrame 创建一个代表 naive 方法的帧
 func newNativeFrame(thread *Thread, method *heap.Method) *Frame {
 	frame := &Frame{}
 	frame.Thread = thread
 	frame.Method = method
+	// 创建本地变量表，大小为参数格式，naive 方法总是 static 的
 	frame.LocalVars = newLocalVars(method.ParamSlotCount) // todo
+	// 创建大小=4操作栈
 	frame.OperandStack = newOperandStack(4)               // todo
 
 	if method.Code == nil {

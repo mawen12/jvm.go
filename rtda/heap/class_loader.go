@@ -55,8 +55,11 @@ func newBootLoader(cp *classpath.ClassPath, verbose bool) *ClassLoader {
 	}
 }
 
+// init 加载 Object, Class, Cloneable, Thread, String, 基本数据类型及其数组
 func (loader *ClassLoader) init() {
+	// 加载 java.lang.Object
 	loader.jlObjectClass = loader.LoadClass(jlObjectClassName)
+	// 加载 java.lang.Class
 	loader.jlClassClass = loader.LoadClass(jlClassClassName)
 	for _, class := range loader.classMap {
 		if class.JClass == nil {
@@ -64,15 +67,31 @@ func (loader *ClassLoader) init() {
 			class.JClass.Extra = class
 		}
 	}
+	// 加载 java.lang.Cloneable
 	loader.jlCloneableClass = loader.LoadClass(jlCloneableClassName)
+	// 加载 java.io.Serializable
 	loader.ioSerializableClass = loader.LoadClass(ioSerializableClassName)
+	// 加载 java.lang.Thread
 	loader.jlThreadClass = loader.LoadClass(jlThreadClassName)
+	// 加载 java.lang.String
 	loader.jlStringClass = loader.LoadClass(jlStringClassName)
+	// 加载原始数据类型
 	loader.loadPrimitiveClasses()
+	// 加载原始数据类型对应的数组
 	loader.loadPrimitiveArrayClasses()
 }
 
+// loadPrimitiveClasses 加载原始数据类型
 func (loader *ClassLoader) loadPrimitiveClasses() {
+	// void -> java.lang.Void
+	// boolean -> java.lang.Boolean
+	// byte -> java.lang.Byte
+	// char -> java.lang.Character
+	// short -> java.lang.Short
+	// int -> java.lang.Integer
+	// long -> java.lang.Long
+	// float -> java.lang.Float
+	// double -> java.lang.Double
 	for _, primitiveType := range primitiveTypes {
 		loader.loadPrimitiveClass(primitiveType.Name)
 	}
@@ -86,7 +105,17 @@ func (loader *ClassLoader) loadPrimitiveClass(className string) {
 	loader.classMap[className] = class
 }
 
+// loadPrimitiveArrayClasses 加载原始数据类型对应的数组
 func (loader *ClassLoader) loadPrimitiveArrayClasses() {
+	// void -> java.lang.Void
+	// boolean -> java.lang.Boolean
+	// byte -> java.lang.Byte
+	// char -> java.lang.Character
+	// short -> java.lang.Short
+	// int -> java.lang.Integer
+	// long -> java.lang.Long
+	// float -> java.lang.Float
+	// double -> java.lang.Double
 	for _, primitiveType := range primitiveTypes {
 		loader.loadArrayClass(primitiveType.ArrayClassName)
 	}
@@ -148,6 +177,7 @@ func (loader *ClassLoader) getClass(name string) *Class {
 	panic("class not loaded! " + name)
 }
 
+// LoadClass 通过类名加载类
 func (loader *ClassLoader) LoadClass(name string) *Class {
 	// 检查是否已经加载过，加载过就直接返回
 	if class, ok := loader.classMap[name]; ok {

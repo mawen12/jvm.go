@@ -117,13 +117,13 @@ func (class *Class) MarkFullyInitialized() {
 	class.initState = _fullyInitialized
 }
 
-// getField 读取字段
+// getField 根据字段名、字段描述符、是否静态（access flag）从当前类一直找到父类，查找匹配的字段
 func (class *Class) getField(name, descriptor string, isStatic bool) *Field {
-	// 从当前类->父类->父类... -> java.lang.Object
+	// 从当前类->父类... -> java.lang.Object
 	for k := class; k != nil; k = k.SuperClass {
 		// 遍历字段
 		for _, field := range k.Fields {
-			// 检查条件是否匹配
+			// 检查字段名称、字段描述符、是否静态是否匹配
 			if field.IsStatic() == isStatic &&
 				field.Name == name &&
 				field.Descriptor == descriptor {
@@ -136,13 +136,13 @@ func (class *Class) getField(name, descriptor string, isStatic bool) *Field {
 	return nil
 }
 
-// getMethod 读取方法
+// getMethod 根据方法名称、方法描述符、是否静态（access flag）从当前类一直找到父类，查找匹配的方法
 func (class *Class) getMethod(name, descriptor string, isStatic bool) *Method {
-	// 从当前类->父类->父类... -> java.lang.Object
+	// 从当前类->父类... -> java.lang.Object
 	for k := class; k != nil; k = k.SuperClass {
 		// 遍历方法
 		for _, method := range k.Methods {
-			// 检查条件是否匹配
+			// 检查方法名称、方法描述符、是否静态是否匹配
 			if method.IsStatic() == isStatic &&
 				method.Name == name &&
 				method.Descriptor == descriptor {
@@ -155,9 +155,11 @@ func (class *Class) getMethod(name, descriptor string, isStatic bool) *Method {
 	return nil
 }
 
-// getDeclaredMethod 读取当前类中声明的方法
+// getDeclaredMethod 根据方法名称、方法描述符、是否静态（access flag）从当前类中查找匹配的方法
 func (class *Class) getDeclaredMethod(name, descriptor string, isStatic bool) *Method {
+	// 遍历当前类的方法
 	for _, method := range class.Methods {
+		// 检查方法名称、方法描述符、是否静态是否匹配
 		if method.IsStatic() == isStatic &&
 			method.Name == name &&
 			method.Descriptor == descriptor {
@@ -168,28 +170,29 @@ func (class *Class) getDeclaredMethod(name, descriptor string, isStatic bool) *M
 	return nil
 }
 
-// GetStaticField 读取静态字段
+// GetStaticField 根据方法名称、方法描述符，从当前类一直找到父类，查找匹配的静态字段
 func (class *Class) GetStaticField(name, descriptor string) *Field {
 	return class.getField(name, descriptor, true)
 }
 
-// GetInstanceField 读取实例字段
+// GetInstanceField 根据方法名称、方法描述符，从当前类一直找到父类，查找匹配的实例字段
 func (class *Class) GetInstanceField(name, descriptor string) *Field {
 	return class.getField(name, descriptor, false)
 }
 
-// GetStaticMethod 读取静态方法
+// GetStaticMethod 根据方法名称、方法描述符，从当前类一直找到父类，查找匹配的静态方法
 func (class *Class) GetStaticMethod(name, descriptor string) *Method {
 	return class.getMethod(name, descriptor, true)
 }
 
-// GetInstanceMethod 读取实例方法
+// GetInstanceMethod 根据方法名称、方法描述符，从当前类一直找到父类，查找匹配的实例方法
 func (class *Class) GetInstanceMethod(name, descriptor string) *Method {
 	return class.getMethod(name, descriptor, false)
 }
 
 // GetMainMethod 读取 main 方法
 func (class *Class) GetMainMethod() *Method {
+	// 读取 name=main, desc=([Ljava/lang/String;)V 的静态方法
 	return class.GetStaticMethod(mainMethodName, mainMethodDesc)
 }
 
@@ -203,16 +206,17 @@ func (class *Class) NewObjWithExtra(extra interface{}) *Object {
 	return obj
 }
 
-// NewObj 初始化对象
+// NewObj 使用该类创建一个堆的对象
 func (class *Class) NewObj() *Object {
-	// 要初始化示例字段
-	if class.instanceFieldCount > 0 {
-		// 将示例字段保存到 slot
+	// 检查是否存在实例字段
+	if class.instanceFieldCount > 0 { // 有实例字段
+		// 构造保存实例字段值的slot数组
 		fields := make([]Slot, class.instanceFieldCount)
+		// 
 		obj := newObj(class, fields, nil)
 		obj.initFields()
 		return obj
-	} else {
+	} else { // 没有实例字段
 		return newObj(class, nil, nil)
 	}
 }

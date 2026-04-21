@@ -22,6 +22,7 @@ var (
 		},
 	}
 
+	// 
 	ShimBootstrapMethod = &heap.Method{
 		ClassMember: newShimMember("<bootstrap>"),
 		MethodData: heap.MethodData{

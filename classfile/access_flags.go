@@ -43,6 +43,7 @@ func (flags AccessFlags) IsProtected() bool    { return flags&AccProtected != 0 
 func (flags AccessFlags) IsStatic() bool       { return flags&AccStatic != 0 }
 func (flags AccessFlags) IsFinal() bool        { return flags&AccFinal != 0 }
 func (flags AccessFlags) IsSuper() bool        { return flags&AccSuper != 0 }
+// IsSynchronized 是否为同步，即是否使用了 synchronized 来修饰方法
 func (flags AccessFlags) IsSynchronized() bool { return flags&AccSynchronized != 0 }
 func (flags AccessFlags) IsOpen() bool         { return flags&AccOpen != 0 }
 func (flags AccessFlags) IsTransitive() bool   { return flags&AccTransitive != 0 }

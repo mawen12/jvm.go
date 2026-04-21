@@ -4,6 +4,9 @@ import (
 	"github.com/zxh0/jvm.go/classfile"
 )
 
+/*
+对应类的常量池中的 Methodref
+*/
 type ConstantMethodRef struct {
 	ConstantMemberRef
 	ParamSlotCount uint
@@ -20,17 +23,21 @@ func newConstantMethodRef(class *Class, cf *classfile.ClassFile,
 	return ref
 }
 
+// GetMethod 读取静态/实例方法
 func (ref *ConstantMethodRef) GetMethod(static bool) *Method {
-	if ref.resolved == nil {
-		if static {
+	// 检查该常量是否已经解析
+	if ref.resolved == nil { // 尚未解析
+		// 检查是否为静态方法
+		if static { // 静态
 			ref.resolveStaticMethod()
-		} else {
+		} else { // 实例方法
 			ref.resolveSpecialMethod()
 		}
 	}
 	return ref.resolved
 }
 
+// resolveStaticMethod 解析静态方法
 func (ref *ConstantMethodRef) resolveStaticMethod() {
 	method := ref.findMethod(true)
 	if method != nil {
@@ -41,6 +48,7 @@ func (ref *ConstantMethodRef) resolveStaticMethod() {
 	}
 }
 
+// resolveSpecialMethod 解析实例方法
 func (ref *ConstantMethodRef) resolveSpecialMethod() {
 	method := ref.findMethod(false)
 	if method != nil {
@@ -62,8 +70,11 @@ func (ref *ConstantMethodRef) resolveSpecialMethod() {
 	panic("special method not found!")
 }
 
+// findMethod 查找静态/实例方法
 func (ref *ConstantMethodRef) findMethod(isStatic bool) *Method {
+	// 使用 bootstrap class loader 加载该常量所在的类
 	class := ref.getBootLoader().LoadClass(ref.className)
+	// 从类中通过方法名称、方法描述符、是否静态（access flag）来读取方法
 	return class.getMethod(ref.name, ref.descriptor, isStatic)
 }
 
