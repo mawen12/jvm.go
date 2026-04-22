@@ -32,7 +32,7 @@ var (
 	showModuleResolutionFlag bool
 )
 
-// 对应 java 命令
+// 对应 java 命令 go run ./cmd/java --Xjre /opt/java/jdk1.8.0_451.jdk/Contents/Home/jre HelloWorld
 func main() {
 	// 解析参数
 	opts, args := parseOptions()
@@ -135,12 +135,13 @@ func startJVM8(opts *vm.Options, args []string) {
 
 	// 创建 main 线程
 	mainThread := createMainThread(opts, args)
-	// 
+	// 对主线程执行循环，直到没有方法可调用为止
 	cpu.Loop(mainThread)
+	//  当 非 daemon 线程数量 > 0 时，阻塞等待
 	cpu.KeepAlive()
 }
 
-// createMainThread 创建 main 线程，
+// createMainThread 初始化 bootstrap class loader, 创建 main 线程
 func createMainThread(opts *vm.Options, args []string) *rtda.Thread {
 	// 解析 jdk 和 classpath 路径
 	cp := classpath.Parse(opts)

@@ -10,6 +10,7 @@ import (
 	"github.com/zxh0/jvm.go/vm"
 )
 
+// 方法未被使用
 func ExecMethod(thread *rtda.Thread, method *heap.Method, args []heap.Slot) heap.Slot {
 	shimFrame := rtda.NewShimFrame(thread, args)
 	thread.PushFrame(shimFrame)
@@ -44,6 +45,7 @@ func ExecMethod(thread *rtda.Thread, method *heap.Method, args []heap.Slot) heap
 	}
 }
 
+// Loop 对目标线程执行循环，直到没有方法可调用为止
 func Loop(thread *rtda.Thread) {
 	// 读取线程对象
 	threadObj := thread.JThread()
@@ -51,7 +53,7 @@ func Loop(thread *rtda.Thread) {
 	isDaemon := threadObj != nil && threadObj.GetFieldValue("daemon", "Z").IntValue() == 1
 	// 检查是否为 daemon
 	if !isDaemon {
-		// 线程计数+1
+		// 非 daemon 线程计数+1
 		nonDaemonThreadStart()
 	}
 
@@ -79,34 +81,50 @@ func _loop(thread *rtda.Thread) {
 		thread.PC = pc
 
 		// fetch instruction
-		// 
+		// 从方法上读取指定程序计数器对应的指令，并对程序计数器按需增加，返回最新的指令和程序计数器
 		instr, nextPC := fetchInstruction(frame.Method, pc)
+		// 更新桢的程序计数器
 		frame.NextPC = nextPC
 
 		// execute instruction
+		// 执行指令
 		instr.Execute(frame)
+
+		// 如果设置了 debug，则输出执行的指令和桢信息
 		if debug {
 			_logInstruction(frame, instr)
 		}
+
+		// 如果线程中的虚拟机栈没有可执行的方法，则退出循环
 		if thread.IsStackEmpty() {
 			break
 		}
 	}
 }
 
-// fetchInstruction 
+// fetchInstruction 从方法上读取指定程序计数器对应的指令，并对程序计数器按需增加，返回最新的指令和程序计数器
 func fetchInstruction(method *heap.Method, pc int) (base.Instruction, int) {
-	// 检查方法指令是否存在
-	if method.Instructions == nil {
-		// 
+
+	// 检查方法指令是否已经解析
+	if method.Instructions == nil { // 不存在，需要解析
+		// TODO by mawen debug
+		if method.Name == "main" {
+			fmt.Println("Method ", method.Name, method.Descriptor, method.Class.Name)
+		}
+
+		// 将字节数组解码为指令数组
 		method.Instructions = instructions.Decode(method.Code)
 	}
 
+	// 转换为指令接口数组
 	instrs := method.Instructions.([]base.Instruction)
+	// 根据程序计数器，读取对应位置的指令
 	instr := instrs[pc]
 
 	// calc nextPC
+	// 程序计数器+1
 	pc++
+	// 遍历当前指令集，对于空指令的场景自增
 	for pc < len(instrs) && instrs[pc] == nil {
 		pc++
 	}
@@ -146,16 +164,18 @@ func _logFrames(thread *rtda.Thread) {
 	}
 }
 
+// _logInstruction 输出执行的指令和桢信息
 func _logInstruction(frame *rtda.Frame, instr base.Instruction) {
 	thread := frame.Thread
 	method := frame.Method
 	className := method.Class.Name
 	pc := thread.PC
 
-	if method.IsStatic() {
+	// 检查是否为静态方法
+	if method.IsStatic() { // 静态方法
 		fmt.Printf("[instruction] thread:%p %v.%v() #%v %T %v\n",
 			thread, className, method.Name, pc, instr, instr)
-	} else {
+	} else { // 实例方法
 		fmt.Printf("[instruction] thread:%p %v#%v() #%v %T %v\n",
 			thread, className, method.Name, pc, instr, instr)
 	}

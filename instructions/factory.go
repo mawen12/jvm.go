@@ -595,74 +595,147 @@ func newInstruction(opcode byte) base.Instruction {
 		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.dneg
 		return dneg
 	case 0x78:
+		// 将操作数栈顶的两个 int 值弹出，进行左移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ishl
 		return ishl
 	case 0x79:
+		// 将操作数栈顶的两个 long 值弹出，进行左移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lshl
 		return lshl
 	case 0x7a:
+		// 将操作数栈顶的两个 int 值弹出，进行右移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ishr
 		return ishr
 	case 0x7b:
+		// 将操作数栈顶的两个 long 值弹出，进行右移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lshr
 		return lshr
 	case 0x7c:
+		// 将操作数栈顶的两个 int 值弹出，进行逻辑右移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.iushr
 		return iushr
 	case 0x7d:
+		// 将操作数栈顶的两个 long 值弹出，进行逻辑右移后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lushr
 		return lushr
 	case 0x7e:
+		// 将操作数栈顶的两个 int 值弹出，进行 AND 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.iand
 		return iand
 	case 0x7f:
+		// 将操作数栈顶的两个 long 值弹出，进行 AND 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.land
 		return land
 	case 0x80:
+		// 将操作数栈顶的两个 int 值弹出，进行 OR 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ior
 		return ior
 	case 0x81:
+		// 将操作数栈顶的两个 long 值弹出，进行 OR 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lor
 		return lor
 	case 0x82:
+		// 将操作数栈顶的两个 int 值弹出，进行 XOR 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ixor
 		return ixor
 	case 0x83:
+		// 将操作数栈顶的两个 long 值弹出，进行 XOR 后，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lxor
 		return lxor
 	case 0x84:
+		// 将本地变量表上指定索引的 int 进行自增
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.iinc
 		return &IInc{}
 	case 0x85:
+		// 将操作数栈顶的 int 值弹出，转换为 long，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2l
 		return i2l
 	case 0x86:
+		// 将操作数栈顶的 int 值弹出，转换为 float，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2f
 		return i2f
 	case 0x87:
+		// 将操作数栈顶的 int 值弹出，转换为 double，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2d
 		return i2d
 	case 0x88:
+		// 将操作数栈顶的 long 值弹出，转换为 int，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.l2i
 		return l2i
 	case 0x89:
+		// 将操作数栈顶的 long 值弹出，转换为 float，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.l2f
 		return l2f
 	case 0x8a:
+		// 将操作数栈顶的 long 值弹出，转换为 double，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.l2d
 		return l2d
 	case 0x8b:
+		// 将操作数栈顶的 float 值弹出，转换为 int，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.f2i
 		return f2i
 	case 0x8c:
+		// 将操作数栈顶的 float 值弹出，转换为 long，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.f2l
 		return f2l
 	case 0x8d:
+		// 将操作数栈顶的 float 值弹出，转换为 double，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.f2d
 		return f2d
 	case 0x8e:
+		// 将操作数栈顶的 double 值弹出，转换为 int，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.d2i
 		return d2i
 	case 0x8f:
+		// 将操作数栈顶的 double 值弹出，转换为 long，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.d2l
 		return d2l
 	case 0x90:
+		// 将操作数栈顶的 double 值弹出，转换为 float，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.d2f
 		return d2f
 	case 0x91:
+		// 将操作数栈顶的 int 值弹出，转换为 byte，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2b
 		return i2b
 	case 0x92:
+		// 将操作数栈顶的 int 值弹出，转换为 char，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2c
 		return i2c
 	case 0x93:
+		// 将操作数栈顶的 int 值弹出，转换为 short，再压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.i2s
 		return i2s
 	case 0x94:
+		// 将操作数栈顶的两个 long 值弹出，进行比较，再将 int 结果压入操作数栈
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.lcmp
 		return lcmp
 	case 0x95:
+		// 将操作数栈顶的两个 float 值弹出，进行比较，再将 int 结果压入操作数栈
+		// 如果其中一个值时 NaN，那么 int = -1
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.fcmpl
 		return fcmpl
 	case 0x96:
+		// 将操作数栈顶的两个 float 值弹出，进行比较，再将 int 结果压入操作数栈
+		// 如果其中一个值时 NaN，那么 int = 1
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.fcmpl
 		return fcmpg
 	case 0x97:
+		// 将操作数栈顶的两个 double 值弹出，进行比较，再将 int 结果压入操作数栈
+		// 如果其中一个值时 NaN，那么 int = 1
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.dcmpl
 		return dcmpl
 	case 0x98:
+		// 将操作数栈顶的两个 double 值弹出，进行比较，再将 int 结果压入操作数栈
+		// 如果其中一个值时 NaN，那么 int = 1
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.dcmpg
 		return dcmpg
 	case 0x99:
+		// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.if_cond
+		// 将操作数栈顶的 int 值弹出，与 0 做比较
 		return NewIfEQ()
 	case 0x9a:
+		// 将操作数栈顶的 int 值弹出，与 0 做比较
 		return NewIfNE()
 	case 0x9b:
 		return NewIfLT()

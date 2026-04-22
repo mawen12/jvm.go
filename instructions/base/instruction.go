@@ -4,8 +4,13 @@ import (
 	"github.com/zxh0/jvm.go/rtda"
 )
 
+/*
+JVM 指令
+*/
 type Instruction interface {
+	// 初始化指令
 	FetchOperands(reader *CodeReader)
+	// 执行指令
 	Execute(frame *rtda.Frame)
 }
 
